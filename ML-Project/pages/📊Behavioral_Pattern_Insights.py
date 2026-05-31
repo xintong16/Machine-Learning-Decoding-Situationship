@@ -1,17 +1,19 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from utils.styles import inject_css, footer, page_header
 
-st.set_page_config(page_title="Dating Trends Insights", page_icon="📊", layout="wide")
+inject_css()
 
-# User-Friendly Header
-st.title("📊 Online Dating Trends & Insights")
-st.markdown("""
-Welcome to the Data Discovery Center! Here, we look at the real data patterns of about thousands of app users. 
-Use this page to see how daily habits like swiping and texting directly lead to matching up, 
-getting ghosted, or running into misleading profiles!
-""")
+# ── Hero ─────────────────────────────────────────────────────────────────────
+page_header(
+    eyebrow="Behavioral Pattern Insights",
+    title="Online Dating Trends & Insights",
+    subtitle="Explore real data patterns from thousands of app users — see how daily habits lead to matches, ghosting, or catfishing.",
+    badges=["14,974 profiles", "7 behavioral features", "3 outcomes"]
+)
 
+# ── Load data ─────────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data():
     try:
@@ -21,13 +23,10 @@ def load_data():
         df = pd.read_csv(direct_csv_url)
     return df
 
-# Load the dataset safely
 try:
     df = load_data()
-    
-    # --- STEP 1: CLEAN QUICK LABELS FOR THE USER ---
+
     target_col = 'Outcome_encoded' if 'Outcome_encoded' in df.columns else 'match_outcome'
-    
     if target_col in df.columns:
         df['Dating Outcome'] = df[target_col].astype(str).replace({
             '0': 'Ghosted 👻', '1': 'Mutual Match 👩‍❤️‍👨', '2': 'Catfished 🕵️‍♂️',
@@ -46,200 +45,141 @@ try:
         'emoji_usage_rate': 'Emoji Usage Rate',
         'Situationship_Index': 'Situationship Index'
     }
-    
+
     available_cols = [c for c in friendly_names.keys() if c in df.columns]
     dropdown_labels = [friendly_names[c] for c in available_cols]
-    
-    # --- STEP 2: SUMMARY METRICS ---
-    st.markdown("### 📈 Dating Apps Quick Statistics")
-    col_m1, col_m2, col_m3 = st.columns(3)
-    
-    with col_m1:
-        st.metric(label="Profiles Analyzed", value=f"{len(df):,}")
-    
-    with col_m2:
-        if 'AppUsage' in df.columns:
-            avg_time = df['AppUsage'].mean()
-            st.metric(label="Average Daily App Usage Score", value=f"{avg_time:.2f}")
-        else:
-            st.metric(label="Data Attributes Tracked", value=f"{len(available_cols)} Patterns")
-            
-    with col_m3:
-        if 'Dating Outcome' in df.columns:
-            most_common = df['Dating Outcome'].mode()[0]
-            st.metric(label="Most Common App Result", value=most_common)
-        else:
-            st.metric(label="Target Category", value="Dating Outcomes")
 
-    st.markdown("---")
+    # ── Metrics ───────────────────────────────────────────────────────────────
+    most_common = df['Dating Outcome'].mode()[0] if 'Dating Outcome' in df.columns else '—'
+    avg_usage = f"{df['AppUsage'].mean():.2f}" if 'AppUsage' in df.columns else '—'
 
-    # --- STEP 3: INTERACTIVE COMPARISON CHART (DYNAMIC MULTI-FEATURE BAR CHART) ---
+    st.markdown(f"""
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-val">{len(df):,}</div>
+        <div class="metric-lbl">Profiles Analyzed</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val">{avg_usage}</div>
+        <div class="metric-lbl">Avg Daily App Usage Score</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val">{len(available_cols)}</div>
+        <div class="metric-lbl">Behavioral Features</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val">3</div>
+        <div class="metric-lbl">Outcome Classes</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+    # ── Bar chart ─────────────────────────────────────────────────────────────
     if len(available_cols) >= 1:
-        st.markdown("### 🎛️ Dynamic Behavioral Profile Builder")
-        st.markdown("Let's build your own custom comparison chart !")
+        st.markdown("""
+<div class="section-card">
+    <div class="section-label">Dynamic Behavioral Profile Builder</div>
+    <div class="overview-body">Build your own custom comparison chart by selecting features below.</div>
+</div>
+""", unsafe_allow_html=True)
 
-        # Interactive Checklist Filter for Features
         selected_labels = st.multiselect(
-            "Select which features you want to compare on the chart:",
+            "Select features to compare:",
             options=dropdown_labels,
-            default=dropdown_labels[:4]  # Pre-selects the first 4 features by default
+            default=dropdown_labels[:4]
         )
 
         if not selected_labels:
-            st.warning("⚠️ Please select at least one feature from the filter above to display the visual chart!")
+            st.markdown('<div class="info-box">⚠️ Please select at least one feature to display the chart.</div>', unsafe_allow_html=True)
         else:
-            # Map selected friendly labels back to the real technical database column names
             selected_real_cols = [k for k, v in friendly_names.items() if v in selected_labels]
-
-            # 1. Calculate the mean for the selected features grouped by Outcome
             df_bar_raw = df.groupby('Dating Outcome')[selected_real_cols].mean().reset_index()
-
-            # 2. Apply Min-Max Scaling to blow up and amplify the visual differences
             df_bar_scaled = df_bar_raw.copy()
             for col in selected_real_cols:
                 col_min = df_bar_raw[col].min()
                 col_max = df_bar_raw[col].max()
-                if col_max != col_min:
-                    df_bar_scaled[col] = (df_bar_raw[col] - col_min) / (col_max - col_min)
-                else:
-                    df_bar_scaled[col] = 0.5
-
-            # 3. Melt the data frame into a clean structural format for Plotly Express
-            df_bar_melted = df_bar_scaled.melt(
-                id_vars='Dating Outcome', 
-                value_vars=selected_real_cols,
-                var_name='Habit Attribute', 
-                value_name='Relative Intensity'
-            )
-
-            # 4. Map back the technical column names to our clean, user-friendly labels
+                df_bar_scaled[col] = (df_bar_raw[col] - col_min) / (col_max - col_min) if col_max != col_min else 0.5
+            df_bar_melted = df_bar_scaled.melt(id_vars='Dating Outcome', value_vars=selected_real_cols, var_name='Habit Attribute', value_name='Relative Intensity')
             df_bar_melted['Habit Label'] = df_bar_melted['Habit Attribute'].map(friendly_names)
 
-            # 5. Build a grouped side-by-side Horizontal Bar Chart
-            fig_filtered_bar = px.bar(
-                df_bar_melted,
-                y='Habit Label',
-                x='Relative Intensity',
-                color='Dating Outcome',
-                barmode='group',  
-                orientation='h',  
+            fig_bar = px.bar(
+                df_bar_melted, y='Habit Label', x='Relative Intensity',
+                color='Dating Outcome', barmode='group', orientation='h',
                 title="Comparison of Habits by Outcome",
-                color_discrete_map={
-                    'Mutual Match 👩‍❤️‍👨': '#2ecc71', 
-                    'Ghosted 👻': '#f1c40f', 
-                    'Catfished 🕵️‍♂️': '#e74c3c'
-                },
-                labels={'Relative Intensity': 'Relative Intensity (Min-Max Scaled Diff)'}
+                color_discrete_map={'Mutual Match 👩‍❤️‍👨': '#639922', 'Ghosted 👻': '#d4537e', 'Catfished 🕵️‍♂️': '#ef9f27'},
+                labels={'Relative Intensity': 'Relative Intensity (Min-Max Scaled)'}
             )
-
-            # Make the bars look highly professional and clear
-            fig_filtered_bar.update_layout(
-                yaxis_title="",
-                xaxis_title="The longer the bar, the higher that specific group scores for that habit",
-                height=150 + (len(selected_labels) * 80),  
+            fig_bar.update_layout(
+                yaxis_title="", height=150 + (len(selected_labels) * 80),
                 legend_title_text='Dating Outcome',
-                xaxis=dict(showticklabels=False)  
+                xaxis=dict(showticklabels=False),
+                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(family='DM Sans'),
             )
+            st.plotly_chart(fig_bar, use_container_width=True)
 
-            st.plotly_chart(fig_filtered_bar, use_container_width=True)
-
-    st.markdown("---")
-
-    # --- STEP 3.5: INTERACTIVE COMPARISON CHART (RADAR BEHAVIORAL PROFILE) ---
+    # ── Radar chart ───────────────────────────────────────────────────────────
     if len(available_cols) >= 3:
-        st.markdown("### 🕸️ Summary for User Behavior Profiles")
-        st.markdown("This holistic view visualizes how all user habits combine simultaneously. By normalizing the attributes, we expose the unmistakable geometric 'fingerprint' unique to each dating destiny.")
+        st.markdown("""
+<div class="section-card">
+    <div class="section-label">User Behavior Profile Fingerprints</div>
+    <div class="overview-body">This radar view visualizes how all habits combine simultaneously, exposing the geometric fingerprint unique to each dating destiny.</div>
+</div>
+""", unsafe_allow_html=True)
 
-        # 1. Group by outcome and calculate the mean for all numerical available columns
         df_radar_raw = df.groupby('Dating Outcome')[available_cols].mean().reset_index()
-
-        # 2. Apply Min-Max Scaling on the averages to drastically amplify hidden visual differences
         df_radar_scaled = df_radar_raw.copy()
         for col in available_cols:
             col_min = df_radar_raw[col].min()
             col_max = df_radar_raw[col].max()
-            if col_max != col_min:
-                df_radar_scaled[col] = (df_radar_raw[col] - col_min) / (col_max - col_min)
-            else:
-                df_radar_scaled[col] = 0.5
-
-        # 3. Melt the data frame so it fits Plotly Express's expected structural format
-        df_radar_melted = df_radar_scaled.melt(
-            id_vars='Dating Outcome', 
-            value_vars=available_cols,
-            var_name='Habit Attribute', 
-            value_name='Relative Intensity'
-        )
-
-        # 4. Map back the technical column names to our clean, user-friendly labels
+            df_radar_scaled[col] = (df_radar_raw[col] - col_min) / (col_max - col_min) if col_max != col_min else 0.5
+        df_radar_melted = df_radar_scaled.melt(id_vars='Dating Outcome', value_vars=available_cols, var_name='Habit Attribute', value_name='Relative Intensity')
         df_radar_melted['Habit Label'] = df_radar_melted['Habit Attribute'].map(friendly_names)
 
-        # 5. Build the elegant, highly contrastive Radar Map
         fig_radar = px.line_polar(
-            df_radar_melted, 
-            r='Relative Intensity', 
-            theta='Habit Label', 
-            color='Dating Outcome',
-            line_close=True,
-            title="How the Machine Learning Model Separates Class Profiles",
-            color_discrete_map={
-                'Mutual Match 👩‍❤️‍👨': '#2ecc71', 
-                'Ghosted 👻': '#f1c40f', 
-                'Catfished 🕵️‍♂️': '#e74c3c'
-            },
+            df_radar_melted, r='Relative Intensity', theta='Habit Label',
+            color='Dating Outcome', line_close=True,
+            title="How ML Models Separate Class Profiles",
+            color_discrete_map={'Mutual Match 👩‍❤️‍👨': '#639922', 'Ghosted 👻': '#d4537e', 'Catfished 🕵️‍♂️': '#ef9f27'},
             template="plotly_white"
         )
-
-        # 6. FIXED: Fill inside area using standard polar coordinate parameters
         fig_radar.update_traces(fill='toself')
-
-        fig_radar.update_layout(
-            polar=dict(
-                radialaxis=dict(visible=True, range=[0, 1], showticklabels=False)
-            ),
-            showlegend=True,
-            height=500
-        )
-        
+        fig_radar.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 1], showticklabels=False)), height=500, font=dict(family='DM Sans'))
         st.plotly_chart(fig_radar, use_container_width=True)
 
-        # --- NEW PLAIN-ENGLISH RADAR EXPLANATION BOX ---
-        st.info("""
-        💡 **What this Web Graph means?**
-        
-        The further a color spikes out towards an edge, the higher that group scores for that habit. 
-        
-        * 🟩 **Mutual Match (Top & Right Side):** The green area grows towards **Daily App Usage**, **Messages Sent**, and **Profile Pics**. This means successful matches come from highly active, talkative, and visually complete profiles.
-        * 🟥 **Catfished (Left Side):** The red area grows aggressively out towards the **Situationship Index** and **Emoji Usage**, but completely moves away from bio lengths. This is a classic bot or scam signature.
-        * 🟨 **Ghosted (Bottom Spike):** The yellow area grows directly down towards **Bio Characters Length**. This reveals that ghosted users put high effort into writing massive biographies, but score too low on daily app presence to keep the spark alive.
-        """)
+        st.markdown("""
+<div class="info-box" style="margin-bottom:2.5rem">
+    💡 <strong>What this radar means:</strong> The further a colour spikes outward, the higher that group scores for that habit.
+    <strong>Mutual Match (green)</strong> spikes toward app usage, messages, and profile pics.
+    <strong>Catfished (amber)</strong> spikes toward Situationship Index and emoji usage.
+    <strong>Ghosted (pink)</strong> spikes toward bio length but scores low on daily presence.
+</div>
+""", unsafe_allow_html=True)
 
-    st.markdown("---")
-
-    # --- STEP 4: PIE CHART BREAKDOWN ---
+    # ── Pie chart ─────────────────────────────────────────────────────────────
     if 'Dating Outcome' in df.columns:
-        st.markdown("### 🗺️ Ultimate Outcome Breakdown")
-        st.markdown("What percentage of users actually get a perfect match versus falling into dating traps?")
-        
-        fig_pie = px.pie(
-            df, 
-            names='Dating Outcome', 
-            hole=0.4,
-            color='Dating Outcome',
-            color_discrete_map={'Mutual Match 👩‍❤️‍👨': '#2ecc71', 'Ghosted 👻': '#f1c40f', 'Catfished 🕵️‍♂️': '#e74c3c'}
-        )
-        st.plotly_chart(fig_pie, use_container_width=True)
-    
-    st.markdown("---")
+        st.markdown("""
+<div class="section-card" style="margin-top:3.25rem">
+    <div class="section-label">Ultimate Outcome Breakdown</div>
+    <div class="overview-body">What percentage of users actually get a match versus falling into dating traps?</div>
+</div>
+""", unsafe_allow_html=True)
 
-    # --- STEP 5: CLEAN DATA SHEET LOOKER ---
-    st.markdown("---")
-    with st.expander("🔍 Click here to view a sample of the raw spreadsheet data"):
-        st.markdown("This is a preview of the clean, raw data table powering this page:")
+        fig_pie = px.pie(
+            df, names='Dating Outcome', hole=0.4, color='Dating Outcome',
+            color_discrete_map={'Mutual Match 👩‍❤️‍👨': '#639922', 'Ghosted 👻': '#d4537e', 'Catfished 🕵️‍♂️': '#ef9f27'}
+        )
+        fig_pie.update_layout(font=dict(family='DM Sans'), paper_bgcolor='rgba(0,0,0,0)')
+        st.plotly_chart(fig_pie, use_container_width=True)
+
+    # ── Raw data expander ─────────────────────────────────────────────────────
+    with st.expander("🔍 View sample of raw spreadsheet data"):
         display_features = [c for c in available_cols]
         if 'Dating Outcome' in df.columns:
             display_features.append('Dating Outcome')
         st.dataframe(df[display_features].head(10), use_container_width=True)
 
 except Exception as e:
-    st.error(f"🔄 **Unable to parse data column arrays.** Technical Error Details: {e}")
+    st.markdown(f'<div class="info-box">🔄 <strong>Unable to load data.</strong> Error: {e}</div>', unsafe_allow_html=True)
+
+footer()

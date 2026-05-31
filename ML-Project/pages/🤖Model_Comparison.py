@@ -1,70 +1,107 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from utils.styles import inject_css, footer, page_header
 
-st.set_page_config(page_title="Model Evaluation", page_icon="🤖", layout="wide")
-st.title("🤖 Model Comparison & Benchmark Analytics")
+inject_css()
 
-st.markdown("""
-To predict whether an online interaction profile leads to a **Ghosted**, **Mutual Match**, or **Catfished** outcome, 
-we have built, trained, and cross-validated **5 distinct Machine Learning classifiers**.
-
-Since the dataset splits evenly into 3 target classes, a random blind guess only scores **33.33%**. 
-Below is the master leaderboard showing how our trained models beat random chance!
-""")
+page_header(
+    eyebrow="Model Comparison",
+    title="Model Benchmark & Analytics",
+    subtitle="We built, trained, and cross-validated 5 distinct ML classifiers. Here is how they stack up against random chance.",
+    badges=["5 models", "3-class target", "33.33% baseline"]
+)
 
 @st.cache_data
 def get_model_metrics():
-    # Exactly matching your notebook's Cell 19 Final Evaluation matrix
     data = {
-        # UPDATED: Changed the dictionary key to your preferred column name
-        "Machine Learning Model Trained": [
-            "Logistic Regression (with Situationship Index)", 
-            "Random Forest (Baseline)", 
-            "SVM", 
-            "Gradient Boosting", 
+        "Model": [
+            "Logistic Regression ★",
+            "Random Forest",
+            "SVM",
+            "Gradient Boosting",
             "KNN"
         ],
         "Testing Accuracy (%)": [33.96, 33.76, 33.02, 32.85, 32.49],
-        "CV Mean 5-Fold (%)": [32.76, 33.32, 33.64, 33.26, 33.39],
-        "CV Std Dev": [0.0079, 0.0033, 0.0076, 0.0075, 0.0061]
+        "CV Mean 5-Fold (%)":   [32.76, 33.32, 33.64, 33.26, 33.39],
+        "CV Std Dev":           [0.0079, 0.0033, 0.0076, 0.0075, 0.0061]
     }
     return pd.DataFrame(data)
 
 df_metrics = get_model_metrics()
 
-# Display a clean leaderboard table
-st.subheader("🏆 The 5-Model Performance Leaderboard")
+# ── Metrics row ───────────────────────────────────────────────────────────────
+st.markdown(f"""
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-val">5</div>
+        <div class="metric-lbl">Models Trained</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val">33.96%</div>
+        <div class="metric-lbl">Best Test Accuracy</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val">33.33%</div>
+        <div class="metric-lbl">Random Baseline</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-val">LR</div>
+        <div class="metric-lbl">Winning Model</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ── Leaderboard table ─────────────────────────────────────────────────────────
+st.markdown("""
+<div class="section-card">
+    <div class="section-label">5-Model Performance Leaderboard</div>
+</div>
+""", unsafe_allow_html=True)
+
 st.dataframe(
-    df_metrics.style.highlight_max(axis=0, subset=['Testing Accuracy (%)'], color="#d4edda"), 
+    df_metrics.style.highlight_max(axis=0, subset=['Testing Accuracy (%)'], color="#eaf3de"),
     use_container_width=True
 )
 
-# Interactive Bar Plot Comparing All 5 Models
-st.markdown("### 📊 Visualizing 5-Model Performance Bounds")
-fig_compare = px.bar(
-    df_metrics, 
-    x="Machine Learning Model Trained", # Perfectly matches the data column name now!
-    y="Testing Accuracy (%)", 
-    color="Machine Learning Model Trained", # Perfectly matches the data column name now!
-    text_auto='.2f',
-    title="Testing Accuracy Metrics Across All 5 Trained Models",
-    color_discrete_sequence=px.colors.qualitative.Pastel
-)
+# ── Bar chart ─────────────────────────────────────────────────────────────────
+st.markdown("""
+<div class="section-card" style="margin-top:1.25rem">
+    <div class="section-label">Visualising 5-Model Performance</div>
+    <div class="overview-body">All models beat the 33.33% random baseline. The differences are intentionally tight — human romance is genuinely hard to predict.</div>
+</div>
+""", unsafe_allow_html=True)
 
-# Set tighter boundaries to focus on the performance differences
+fig_compare = px.bar(
+    df_metrics,
+    x="Model",
+    y="Testing Accuracy (%)",
+    color="Model",
+    text_auto='.2f',
+    title="Testing Accuracy Across All 5 Trained Models",
+    color_discrete_sequence=['#d4537e', '#ed93b1', '#ed93b1', '#ed93b1', '#ed93b1']
+)
 fig_compare.update_layout(
-    yaxis_range=[30, 36], 
-    yaxis_title="Accuracy Scale (%)",
-    xaxis_title="Trained Models",
-    showlegend=False
+    yaxis_range=[30, 36],
+    yaxis_title="Accuracy (%)",
+    xaxis_title="",
+    showlegend=False,
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)',
+    font=dict(family='DM Sans')
 )
 st.plotly_chart(fig_compare, use_container_width=True)
 
-# Project Context Analysis (Updated to align precisely with your data facts)
-st.success(
-    "💡 **What do these results actually mean?** \n\n"
-    "1. **The Winner:** **Logistic Regression (with Situationship Index)** came out on top! It predicts dating outcomes **33.96%** of the time on unseen test data, proving that our custom situationship index helps regularized classification maps filter signals from complicated features.\n\n"
-    "2. **The Most Steady:** **Random Forest** as the most steady performer across validation pools. It produced the tightest standard deviation variance (**0.0033**), making its decision paths highly resilient across data splits.\n\n"
-    "3. **The Reality Check:** You might notice all the scores look quite compact (around 32% to 34%). That is entirely normal! Blindly guessing between 3 options yields a baseline of 33.33%. Human romance and online dating are incredibly random and unpredictable, even advanced algorithms have a tough time finding a perfect formula for love!"
-)
+# ── Analysis box ──────────────────────────────────────────────────────────────
+st.markdown("""
+<div class="section-card">
+    <div class="section-label">What These Results Mean</div>
+    <div class="overview-body">
+        <strong>The Winner</strong> — Logistic Regression with Situationship Index came out on top at 33.96%, proving our custom index helps filter meaningful signals.<br><br>
+        <strong>Most Steady</strong> — Random Forest produced the tightest standard deviation (0.0033), making it the most resilient across data splits.<br><br>
+        <strong>Reality Check</strong> — All scores cluster around 32–34%. That is entirely normal. Blindly guessing between 3 options yields 33.33%. Human romance is incredibly random — even advanced algorithms struggle to find a formula for love.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+footer()

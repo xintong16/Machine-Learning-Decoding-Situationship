@@ -3,135 +3,150 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+from utils.styles import inject_css, footer, page_header
 
-st.set_page_config(page_title="Predict Your Destiny", page_icon="🔮", layout="wide")
+inject_css()
 
-st.title("🔮 Situationship Score & Outcome Predictor")
+page_header(
+    eyebrow="Situationship Score Calculator",
+    title="Predict Your Dating Destiny",
+    subtitle="Fill in your app interaction details below. We'll calculate your Situationship Index and forecast your ultimate dating app outcome.",
+    badges=["Custom SI score", "ML prediction", "Instant verdict"]
+)
+
 st.markdown("""
-Curious about your digital connection status? Provide your app interaction details below. 
-Our systems will calculate your custom **Situationship Index Score** and run it through our Machine Learning engine 
-to forecast your ultimate dating app destiny!
-""")
-
-st.markdown("---")
-
-# --- STEP 1: USER BEHAVIOR CAPTURE FORM ---
-st.markdown("### 📝 User Profile & Behavior")
+<div class="section-card">
+    <div class="section-label">Your Profile & Behavior</div>
+</div>
+""", unsafe_allow_html=True)
 
 form_col1, form_col2, form_col3 = st.columns(3)
 
 with form_col1:
-    # 🎚️ Sliders for App Time and Text Messages
-    app_usage_hours = st.slider("📱 Daily App Usage (Hours):", min_value=0.0, max_value=12.0, value=1.5, step=0.5)
-    swipe_right_ratio = st.slider("👉 Swipe Right (Accept) Rate (%):", min_value=0, max_value=100, value=40) / 100.0
-    message_sent = st.slider("💬 Messages Sent Daily:", min_value=0, max_value=300, value=25, step=5)
+    app_usage_hours   = st.slider("📱 Daily App Usage (Hours):", 0.0, 12.0, 1.5, 0.5)
+    swipe_right_ratio = st.slider("👉 Swipe Right Rate (%):", 0, 100, 40) / 100.0
+    message_sent      = st.slider("💬 Messages Sent Daily:", 0, 300, 25, 5)
 
 with form_col2:
-    emoji_rate = st.slider("😂 Emoji Usage Rate (%):", min_value=0, max_value=100, value=30) / 100.0
-    
-    # 🎛️ Swapped Bio and Profile Pics into predefined sliding choices
-    bio_length = st.slider("✍️ Bio Length (Characters):", min_value=0, max_value=500, value=150, step=25)
-    profile_pics = st.slider("📸 Profile Pictures Uploaded:", min_value=1, max_value=10, value=4, step=1)
+    emoji_rate   = st.slider("😂 Emoji Usage Rate (%):", 0, 100, 30) / 100.0
+    bio_length   = st.slider("✍️ Bio Length (Characters):", 0, 500, 150, 25)
+    profile_pics = st.slider("📸 Profile Pictures:", 1, 10, 4)
 
 with form_col3:
-    # 🎚️ Sliders for Weekly App Feedback activity
-    likes_received = st.slider("❤️ Likes Received Weekly:", min_value=0, max_value=500, value=50, step=10)
-    matches_rec = st.slider("🤝 Mutual Matches Weekly:", min_value=0, max_value=100, value=10, step=2)
-    
-    # 🔲 Clean drop-down selections
-    area_type = st.selectbox("📍 Current Area Setting:", ["Urban", "Rural"])
+    likes_received  = st.slider("❤️ Likes Received Weekly:", 0, 500, 50, 10)
+    matches_rec     = st.slider("🤝 Mutual Matches Weekly:", 0, 100, 10, 2)
+    area_type       = st.selectbox("📍 Area Setting:", ["Urban", "Rural"])
     education_level = st.selectbox("🎓 Education Level:", ["High School / Diploma", "Undergraduate Degree", "Postgraduate (Master's/PhD)"])
 
-# --- AUTOMATIC DATA CONVERSIONS FOR CALCULATION ---
-# Converts hours back to minutes behind the scenes to keep your notebook formula safe
-app_usage_time = app_usage_hours * 60.0 
+app_usage_time = app_usage_hours * 60.0
+match_rate     = np.clip(matches_rec / (likes_received + 1), 0.0, 1.0)
+efficiency     = np.clip(matches_rec / (app_usage_time + 0.1), 0.0, 1.0)
 
-# Re-calculate your intermediate metrics exactly like the notebook
-match_rate = np.clip((matches_rec / (likes_received + 1)), 0.0, 1.0)
-efficiency = np.clip((matches_rec / (app_usage_time + 0.1)), 0.0, 1.0)
-
-# Apply Ordinal Encodings matching your project notebook rules
-encoded_location = 1 if area_type == "Urban" else 0
-encoded_edu = 1 if "High School" in education_level else (2 if "Undergraduate" in education_level else 3)
-
-# --- STEP 2: RUN COMPUTATION ON BUTTON CLICK ---
 if st.button("🔮 Calculate Scores & Predict Destiny", use_container_width=True):
-    
-    # Scales app time dynamically against your notebook max threshold of 300 minutes
-    norm_app_time = min(app_usage_time / 300.0, 1.0)
-    
-    situationship_score = 100 * (
-        0.35 * norm_app_time + 
-        0.25 * swipe_right_ratio + 
-        0.25 * (1.0 - match_rate) + 
-        0.15 * (1.0 - efficiency)
-    )
-    situationship_score = float(np.clip(situationship_score, 0.0, 100.0))
 
-    # Machine Learning Pipeline Emulation Paths (User-Friendly Version)
+    norm_app_time = min(app_usage_time / 300.0, 1.0)
+    situationship_score = float(np.clip(100 * (
+        0.35 * norm_app_time +
+        0.25 * swipe_right_ratio +
+        0.25 * (1.0 - match_rate) +
+        0.15 * (1.0 - efficiency)
+    ), 0.0, 100.0))
+
     if situationship_score > 60:
         predicted_class = "Catfished 🕵️‍♂️"
-        probability = [0.15, 0.15, 0.70]
-        verdict_color = "red"
-        advice = "⚠️ **Warning!** Your app habits show a lot of time spent swiping or messaging with very few real matches to show for it. This usually hints at running into bots or fake profiles. Be cautious about who is on the other side of the screen!"
-        
+        probability     = [0.15, 0.15, 0.70]
+        verdict_color   = "#854f0b"
+        border_color    = "#ef9f27"
+        advice = "Your app habits show lots of time spent swiping with very few real matches. This hints at running into bots or fake profiles — be cautious about who is on the other side of the screen."
     elif situationship_score < 38:
-        predicted_class = "Mutual Match 👩‍❤️‍👨"
-        probability = [0.10, 0.75, 0.15]
-        verdict_color = "green"
-        advice = "🎉 **Green Light!** You have an amazing balance. You spend a reasonable amount of time on the app, send quality messages, and get great matches in return. You are on the perfect track to find a genuine connection!"
-        
+        predicted_class = "Mutual Match 💘"
+        probability     = [0.10, 0.75, 0.15]
+        verdict_color   = "#3b6d11"
+        border_color    = "#639922"
+        advice = "You have an amazing balance — reasonable time, quality messages, and great matches. You're on the perfect track to find a genuine connection."
     else:
         predicted_class = "Ghosted 👻"
-        probability = [0.65, 0.20, 0.15]
-        verdict_color = "orange"
-        advice = "💤 **The Fading Zone:** You are putting a lot of effort into sending texts, but the matching spark isn't keeping up. This usually means conversations start off strong but suddenly turn into silence. Try shaking up your profile or bio!"
-    st.markdown("---")
-    st.markdown("### 📊 Visual Summary Dashboard")
+        probability     = [0.65, 0.20, 0.15]
+        verdict_color   = "#993556"
+        border_color    = "#d4537e"
+        advice = "You're putting effort into sending texts but the matching spark isn't keeping up. Conversations start strong but turn to silence. Try refreshing your profile or bio."
+
+    st.markdown('<div class="pink-divider"></div>', unsafe_allow_html=True)
+    st.markdown("""
+<div class="section-card">
+    <div class="section-label">Visual Summary Dashboard</div>
+</div>
+""", unsafe_allow_html=True)
 
     dash_col1, dash_col2 = st.columns([1, 1.2])
 
     with dash_col1:
-        # Visual Meter Gauge using Plotly
         fig_gauge = go.Figure(go.Indicator(
-            mode = "gauge+number",
-            value = situationship_score,
-            title = {'text': "Situationship Risk Index"},
-            domain = {'x': [0, 1], 'y': [0, 1]},
-            gauge = {
-                'axis': {'range': [0, 100]},
-                'bar': {'color': "#2c3e50"},
+            mode="gauge+number",
+            value=situationship_score,
+            title={'text': "Situationship Risk Index", 'font': {'family': 'DM Sans'}},
+            domain={'x': [0, 1], 'y': [0, 1]},
+            gauge={
+                'axis': {'range': [0, 100], 'tickcolor': '#888780'},
+                'bar': {'color': "#4a1528"},
+                'bgcolor': 'white',
+                'bordercolor': '#f4c0d1',
                 'steps': [
-                    {'range': [0, 38], 'color': "#2ecc71"},   # Safe / Match
-                    {'range': [38, 60], 'color': "#f1c40f"},  # Warning / Ghosted
-                    {'range': [60, 100], 'color': "#e74c3c"}  # Dangerous / Catfish
-                ]
+                    {'range': [0, 38],   'color': "#eaf3de"},
+                    {'range': [38, 60],  'color': "#fbeaf0"},
+                    {'range': [60, 100], 'color': "#faeeda"}
+                ],
+                'threshold': {
+                    'line': {'color': "#d4537e", 'width': 3},
+                    'thickness': 0.75,
+                    'value': situationship_score
+                }
             }
         ))
-        fig_gauge.update_layout(height=280, margin=dict(l=20, r=20, t=40, b=20))
+        fig_gauge.update_layout(
+            height=280,
+            margin=dict(l=20, r=20, t=40, b=20),
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(family='DM Sans', color='#3a3a38')
+        )
         st.plotly_chart(fig_gauge, use_container_width=True)
 
-        # Highlight Results Display Panel
-        st.markdown(f"#### Predicted Destiny: :{verdict_color}[{predicted_class}]")
-        st.info(advice)
+        st.markdown(f"""
+<div class="section-card" style="border-left:4px solid {border_color}">
+    <div style="font-family:'DM Serif Display',serif;font-size:22px;
+                color:{verdict_color};margin-bottom:0.5rem">{predicted_class}</div>
+    <div class="overview-body" style="font-size:15px">{advice}</div>
+</div>
+""", unsafe_allow_html=True)
 
     with dash_col2:
-        # Probabilities Bar Chart using Plotly
-        st.markdown("#### Engine Target Confidence Distribution")
-        
+        st.markdown("""
+<div class="section-card">
+    <div class="section-label">Engine Confidence Distribution</div>
+</div>
+""", unsafe_allow_html=True)
+
         prob_df = pd.DataFrame({
-            'Dating Trajectory': ['Ghosted 👻', 'Mutual Match 👩‍❤️‍👨', 'Catfished 🕵️‍♂️'],
-            'Model Confidence (%)': [p * 100 for p in probability]
+            'Dating Trajectory': ['Ghosted 👻', 'Mutual Match 💘', 'Catfished 🕵️‍♂️'],
+            'Confidence (%)': [p * 100 for p in probability]
         })
-        
         fig_bar = px.bar(
-            prob_df, 
-            x='Model Confidence (%)', 
-            y='Dating Trajectory', 
-            orientation='h',
+            prob_df, x='Confidence (%)', y='Dating Trajectory', orientation='h',
             color='Dating Trajectory',
-            color_discrete_map={'Mutual Match 👩‍❤️‍👨': '#2ecc71', 'Ghosted 👻': '#f1c40f', 'Catfished 🕵️‍♂️': '#e74c3c'},
-            text=prob_df['Model Confidence (%)'].apply(lambda x: f"{x:.1f}%")
+            color_discrete_map={
+                'Mutual Match 💘': '#639922',
+                'Ghosted 👻': '#d4537e',
+                'Catfished 🕵️‍♂️': '#ef9f27'
+            },
+            text=prob_df['Confidence (%)'].apply(lambda x: f"{x:.1f}%")
         )
-        fig_bar.update_layout(height=320, showlegend=False, margin=dict(l=10, r=10, t=10, b=10))
+        fig_bar.update_layout(
+            height=320, showlegend=False,
+            margin=dict(l=10, r=10, t=10, b=10),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(family='DM Sans')
+        )
         st.plotly_chart(fig_bar, use_container_width=True)
+
+footer()
