@@ -10,7 +10,7 @@ page_header(
     eyebrow="Behavioral Pattern Insights",
     title="Online Dating Trends & Insights",
     subtitle="Explore real data patterns from thousands of app users — see how daily habits lead to matches, ghosting, or catfishing.",
-    badges=["14,974 profiles", "7 behavioral features", "3 outcomes"]
+    badges=["14,974 profiles", "9 behavioral features", "3 outcomes"]
 )
 
 # ── Load data ─────────────────────────────────────────────────────────────────

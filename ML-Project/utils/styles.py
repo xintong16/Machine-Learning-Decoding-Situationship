@@ -5,7 +5,8 @@ def inject_css():
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap');
 
-#MainMenu, footer, header { visibility: hidden; }
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
 
 .block-container {
     padding-top: 4.5rem !important;
@@ -203,6 +204,19 @@ section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"][aria-current="
 }
 [data-testid="stButton"] > button:hover {
     background: #993556 !important;
+}
+
+/* ── Mobile top nav ── */
+@media (max-width: 768px) {
+    .block-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 1rem !important;
+    }
+    .hero-title { font-size: 28px !important; }
+    .hero-sub { font-size: 15px !important; }
+    .team-grid { grid-template-columns: 1fr 1fr !important; }
+    .metric-grid { grid-template-columns: 1fr 1fr !important; }
 }
 
 </style>

@@ -7,7 +7,7 @@ st.set_page_config(
     layout="wide"
 )
 
-inject_css()   # ← injects all fonts, CSS, spacing globally
+inject_css()   # injects all fonts, CSS, spacing globally
 
 # ── Hero ─────────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -18,9 +18,15 @@ st.markdown("""
     <div class="hero-badges">
         <span class="hero-badge">14,974 records</span>
         <span class="hero-badge">3-class classification</span>
-        <span class="hero-badge">5 ML models</span>
+        <span class="hero-badge">6 ML models</span>
         <span class="hero-badge">Situationship Index</span>
     </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="info-box" style="margin-bottom:1rem">
+    📱 <strong>On mobile?</strong> Tap the <strong>☰</strong> menu at the top left to navigate between pages.
 </div>
 """, unsafe_allow_html=True)
 

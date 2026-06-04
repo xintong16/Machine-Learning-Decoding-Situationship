@@ -16,15 +16,16 @@ page_header(
 def get_model_metrics():
     data = {
         "Model": [
-            "Logistic Regression ★",
-            "Random Forest",
+            "Random Forest (Tuned) ★",
+            "Logistic Regression (w/ Index)",
+            "Random Forest (Baseline)",
             "SVM",
             "Gradient Boosting",
             "KNN"
         ],
-        "Testing Accuracy (%)": [33.96, 33.76, 33.02, 32.85, 32.49],
-        "CV Mean 5-Fold (%)":   [32.76, 33.32, 33.64, 33.26, 33.39],
-        "CV Std Dev":           [0.0079, 0.0033, 0.0076, 0.0075, 0.0061]
+        "Testing Accuracy (%)": [34.52, 33.96, 33.76, 33.02, 32.85, 32.49],
+        "CV Mean 5-Fold (%)":   [33.39, 32.76, 33.32, 33.64, 33.26, 33.39],
+        "CV Std Dev":           [0.0056, 0.0079, 0.0033, 0.0076, 0.0075, 0.0061]
     }
     return pd.DataFrame(data)
 
@@ -34,11 +35,11 @@ df_metrics = get_model_metrics()
 st.markdown(f"""
 <div class="metric-grid">
     <div class="metric-card">
-        <div class="metric-val">5</div>
+        <div class="metric-val">6</div>
         <div class="metric-lbl">Models Trained</div>
     </div>
     <div class="metric-card">
-        <div class="metric-val">33.96%</div>
+        <div class="metric-val">34.52%</div>
         <div class="metric-lbl">Best Test Accuracy</div>
     </div>
     <div class="metric-card">
@@ -46,7 +47,7 @@ st.markdown(f"""
         <div class="metric-lbl">Random Baseline</div>
     </div>
     <div class="metric-card">
-        <div class="metric-val">LR</div>
+        <div class="metric-val">RF Tuned</div>
         <div class="metric-lbl">Winning Model</div>
     </div>
 </div>
@@ -74,13 +75,12 @@ st.markdown("""
 
 fig_compare = px.bar(
     df_metrics,
-    x="Model",
-    y="Testing Accuracy (%)",
-    color="Model",
-    text_auto='.2f',
-    title="Testing Accuracy Across All 5 Trained Models",
-    color_discrete_sequence=['#d4537e', '#ed93b1', '#ed93b1', '#ed93b1', '#ed93b1']
+    x="Model", y="Testing Accuracy (%)",
+    color="Model", text_auto='.2f',
+    title="Testing Accuracy Across All 6 Trained Models",
+    color_discrete_sequence=['#d4537e','#ed93b1','#ed93b1','#ed93b1','#ed93b1','#ed93b1']
 )
+
 fig_compare.update_layout(
     yaxis_range=[30, 36],
     yaxis_title="Accuracy (%)",
@@ -97,11 +97,18 @@ st.markdown("""
 <div class="section-card">
     <div class="section-label">What These Results Mean</div>
     <div class="overview-body">
-        <strong>The Winner</strong> — Logistic Regression with Situationship Index came out on top at 33.96%, proving our custom index helps filter meaningful signals.<br><br>
-        <strong>Most Steady</strong> — Random Forest produced the tightest standard deviation (0.0033), making it the most resilient across data splits.<br><br>
-        <strong>Reality Check</strong> — All scores cluster around 32–34%. That is entirely normal. Blindly guessing between 3 options yields 33.33%. Human romance is incredibly random — even advanced algorithms struggle to find a formula for love.
+        <strong>The Winner</strong> — Random Forest (Tuned via GridSearchCV) came out on top at 34.52%,
+        with best parameters: max_depth=10, min_samples_leaf=2, min_samples_split=10, n_estimators=200.<br><br>
+        <strong>Innovation Impact</strong> — Logistic Regression improved from 33.32% (without Situationship Index)
+        to 33.96% (with index), a +0.64 percentage point gain proving the custom index adds signal.<br><br>
+        <strong>Most Steady</strong> — Random Forest Baseline produced the tightest CV std dev (0.0033),
+        making it the most consistent across data splits.<br><br>
+        <strong>Reality Check</strong> — All scores cluster around 32–35%. Mutual Information scores near 0
+        and PCA showing heavy class overlap confirm this is a synthetic data ceiling —
+        not model failure. Real-world data would yield significantly higher accuracy.
     </div>
 </div>
 """, unsafe_allow_html=True)
+            
 
 footer()
