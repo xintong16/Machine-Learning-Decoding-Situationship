@@ -20,6 +20,15 @@ footer { visibility: hidden; }
 div[data-testid="stMarkdownContainer"] > * { margin-top: 0 !important; }
 html, body, [class*="css"] { font-family: 'DM Sans', sans-serif !important; }
 
+/* ── Force top header visible and pink on mobile ── */
+header[data-testid="stHeader"] {
+    background: #fbeaf0 !important;
+    border-bottom: 0.5px solid #f4c0d1 !important;
+}
+header[data-testid="stHeader"] button {
+    color: #993556 !important;
+}
+
 section[data-testid="stSidebar"] {
     background: linear-gradient(180deg, #fbeaf0 0%, #fff5f8 60%, #ffffff 100%);
     border-right: 0.5px solid #f4c0d1;
@@ -206,19 +215,38 @@ section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"][aria-current="
     background: #993556 !important;
 }
 
-/* ── Mobile top nav ── */
+/* ── Mobile responsive ── */
 @media (max-width: 768px) {
     .block-container {
         padding-left: 1rem !important;
         padding-right: 1rem !important;
-        padding-top: 1rem !important;
+        padding-top: 4rem !important;
     }
-    .hero-title { font-size: 28px !important; }
+    .hero-banner {
+        padding: 1.5rem 1.25rem !important;
+    }
+    .hero-banner::before {
+        font-size: 70px !important;
+    }
+    .hero-title { font-size: 26px !important; }
     .hero-sub { font-size: 15px !important; }
-    .team-grid { grid-template-columns: 1fr 1fr !important; }
+    .section-card { padding: 1rem 1rem !important; }
+    .team-grid { grid-template-columns: 1fr !important; }
     .metric-grid { grid-template-columns: 1fr 1fr !important; }
-}
 
+    /* Stack all inline grids vertically */
+    div[style*="grid-template-columns:1fr 1fr"],
+    div[style*="grid-template-columns: 1fr 1fr"] {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* Stack the resources section */
+    div[style*="display:grid"] {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+}
 </style>
 """, unsafe_allow_html=True)
 

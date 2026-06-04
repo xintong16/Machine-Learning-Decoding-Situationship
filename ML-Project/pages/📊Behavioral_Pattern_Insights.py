@@ -5,7 +5,6 @@ from utils.styles import inject_css, footer, page_header
 
 inject_css()
 
-# ── Hero ─────────────────────────────────────────────────────────────────────
 page_header(
     eyebrow="Behavioral Pattern Insights",
     title="Online Dating Trends & Insights",
@@ -13,7 +12,6 @@ page_header(
     badges=["14,974 profiles", "9 behavioral features", "3 outcomes"]
 )
 
-# ── Load data ─────────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data():
     try:
@@ -99,22 +97,39 @@ try:
                 col_min = df_bar_raw[col].min()
                 col_max = df_bar_raw[col].max()
                 df_bar_scaled[col] = (df_bar_raw[col] - col_min) / (col_max - col_min) if col_max != col_min else 0.5
-            df_bar_melted = df_bar_scaled.melt(id_vars='Dating Outcome', value_vars=selected_real_cols, var_name='Habit Attribute', value_name='Relative Intensity')
+            df_bar_melted = df_bar_scaled.melt(
+                id_vars='Dating Outcome', value_vars=selected_real_cols,
+                var_name='Habit Attribute', value_name='Relative Intensity'
+            )
             df_bar_melted['Habit Label'] = df_bar_melted['Habit Attribute'].map(friendly_names)
 
             fig_bar = px.bar(
                 df_bar_melted, y='Habit Label', x='Relative Intensity',
                 color='Dating Outcome', barmode='group', orientation='h',
                 title="Comparison of Habits by Outcome",
-                color_discrete_map={'Mutual Match 👩‍❤️‍👨': '#639922', 'Ghosted 👻': '#d4537e', 'Catfished 🕵️‍♂️': '#ef9f27'},
+                color_discrete_map={
+                    'Mutual Match 👩‍❤️‍👨': '#639922',
+                    'Ghosted 👻': '#d4537e',
+                    'Catfished 🕵️‍♂️': '#ef9f27'
+                },
                 labels={'Relative Intensity': 'Relative Intensity (Min-Max Scaled)'}
             )
             fig_bar.update_layout(
-                yaxis_title="", height=150 + (len(selected_labels) * 80),
-                legend_title_text='Dating Outcome',
+                yaxis_title="",
+                height=150 + (len(selected_labels) * 80),
                 xaxis=dict(showticklabels=False),
-                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(family='DM Sans'),
+                # ── Legend below chart ──
+                legend=dict(
+                    orientation="h",
+                    yanchor="top",
+                    y=-0.15,
+                    xanchor="center",
+                    x=0.5,
+                    title=""
+                )
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
@@ -133,18 +148,38 @@ try:
             col_min = df_radar_raw[col].min()
             col_max = df_radar_raw[col].max()
             df_radar_scaled[col] = (df_radar_raw[col] - col_min) / (col_max - col_min) if col_max != col_min else 0.5
-        df_radar_melted = df_radar_scaled.melt(id_vars='Dating Outcome', value_vars=available_cols, var_name='Habit Attribute', value_name='Relative Intensity')
+        df_radar_melted = df_radar_scaled.melt(
+            id_vars='Dating Outcome', value_vars=available_cols,
+            var_name='Habit Attribute', value_name='Relative Intensity'
+        )
         df_radar_melted['Habit Label'] = df_radar_melted['Habit Attribute'].map(friendly_names)
 
         fig_radar = px.line_polar(
             df_radar_melted, r='Relative Intensity', theta='Habit Label',
             color='Dating Outcome', line_close=True,
             title="How ML Models Separate Class Profiles",
-            color_discrete_map={'Mutual Match 👩‍❤️‍👨': '#639922', 'Ghosted 👻': '#d4537e', 'Catfished 🕵️‍♂️': '#ef9f27'},
+            color_discrete_map={
+                'Mutual Match 👩‍❤️‍👨': '#639922',
+                'Ghosted 👻': '#d4537e',
+                'Catfished 🕵️‍♂️': '#ef9f27'
+            },
             template="plotly_white"
         )
         fig_radar.update_traces(fill='toself')
-        fig_radar.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 1], showticklabels=False)), height=500, font=dict(family='DM Sans'))
+        fig_radar.update_layout(
+            polar=dict(radialaxis=dict(visible=True, range=[0, 1], showticklabels=False)),
+            height=520,
+            font=dict(family='DM Sans'),
+            # ── Legend below chart ──
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.08,
+                xanchor="center",
+                x=0.5,
+                title=""
+            )
+        )
         st.plotly_chart(fig_radar, use_container_width=True)
 
         st.markdown("""
@@ -167,9 +202,25 @@ try:
 
         fig_pie = px.pie(
             df, names='Dating Outcome', hole=0.4, color='Dating Outcome',
-            color_discrete_map={'Mutual Match 👩‍❤️‍👨': '#639922', 'Ghosted 👻': '#d4537e', 'Catfished 🕵️‍♂️': '#ef9f27'}
+            color_discrete_map={
+                'Mutual Match 👩‍❤️‍👨': '#639922',
+                'Ghosted 👻': '#d4537e',
+                'Catfished 🕵️‍♂️': '#ef9f27'
+            }
         )
-        fig_pie.update_layout(font=dict(family='DM Sans'), paper_bgcolor='rgba(0,0,0,0)')
+        fig_pie.update_layout(
+            font=dict(family='DM Sans'),
+            paper_bgcolor='rgba(0,0,0,0)',
+            # ── Legend below chart ──
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.05,
+                xanchor="center",
+                x=0.5,
+                title=""
+            )
+        )
         st.plotly_chart(fig_pie, use_container_width=True)
 
     # ── Raw data expander ─────────────────────────────────────────────────────
@@ -180,6 +231,9 @@ try:
         st.dataframe(df[display_features].head(10), use_container_width=True)
 
 except Exception as e:
-    st.markdown(f'<div class="info-box">🔄 <strong>Unable to load data.</strong> Error: {e}</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="info-box">🔄 <strong>Unable to load data.</strong> Error: {e}</div>',
+        unsafe_allow_html=True
+    )
 
 footer()

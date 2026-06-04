@@ -24,12 +24,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="info-box" style="margin-bottom:1rem">
-    📱 <strong>On mobile?</strong> Tap the <strong>☰</strong> menu at the top left to navigate between pages.
-</div>
-""", unsafe_allow_html=True)
-
 # ── Project Overview ──────────────────────────────────────────────────────────
 st.markdown("""
 <div class="section-card">
