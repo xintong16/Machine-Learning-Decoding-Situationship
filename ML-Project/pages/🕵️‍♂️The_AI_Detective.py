@@ -87,28 +87,76 @@ sim_col1, sim_col2 = st.columns([1, 1.2])
 with sim_col1:
     app_activity = st.select_slider(
         "⏱️ Daily Screen Time:",
-        options=["Just a few minutes", "Under an hour", "Hours and hours!"],
+        options=["Just a few minutes", "Under an hour", "A few hours", "Hours and hours!"],
         value="Under an hour"
     )
     swiping_habit = st.select_slider(
-        "🎲 Swiping Strategy:",
-        options=["Super Picky", "Healthy Balance", "Swiping 'Right' on everyone"],
+        "👉 Swiping Strategy:",
+        options=["Super Picky", "Healthy Balance", "Swiping Right on Everyone"],
         value="Healthy Balance"
     )
+    messaging_habit = st.select_slider(
+        "💬 Messaging Style:",
+        options=["Rarely replies", "Casual chatter", "Sends lots of texts"],
+        value="Casual chatter"
+    )
+    emoji_habit = st.select_slider(
+        "😂 Emoji Usage:",
+        options=["Never", "Sometimes", "Every single message"],
+        value="Sometimes"
+    )
+    bio_habit = st.select_slider(
+        "✍️ Bio Quality:",
+        options=["Empty / one word", "Short intro", "Detailed & thoughtful"],
+        value="Short intro"
+    )
+    pics_habit = st.select_slider(
+        "📸 Profile Pictures:",
+        options=["Just 1 photo", "A few photos", "Many great photos"],
+        value="A few photos"
+    )
+    location_habit = st.selectbox(
+        "📍 Area Setting:",
+        ["Urban", "Rural"]
+    )
+    edu_habit = st.selectbox(
+        "🎓 Education Level:",
+        ["High School / Diploma", "Undergraduate", "Postgraduate / PhD"]
+    )
 
+    # Score calculation
     score = 50
-    if app_activity == "Just a few minutes": score -= 20
-    if app_activity == "Hours and hours!": score += 25
-    if swiping_habit == "Super Picky": score -= 15
-    if swiping_habit == "Swiping 'Right' on everyone": score += 20
+
+    if app_activity == "Just a few minutes":   score -= 20
+    elif app_activity == "A few hours":        score += 15
+    elif app_activity == "Hours and hours!":   score += 30
+
+    if swiping_habit == "Super Picky":                  score -= 15
+    elif swiping_habit == "Swiping Right on Everyone":  score += 25
+
+    if messaging_habit == "Rarely replies":    score += 15
+    elif messaging_habit == "Sends lots of texts": score -= 5
+
+    if emoji_habit == "Every single message":  score += 10
+
+    if bio_habit == "Empty / one word":        score += 20
+    elif bio_habit == "Detailed & thoughtful": score -= 15
+
+    if pics_habit == "Just 1 photo":           score += 10
+    elif pics_habit == "Many great photos":    score -= 20
+
+    if location_habit == "Rural":              score += 5
+
+    if edu_habit == "High School / Diploma":   score += 5
+    elif edu_habit == "Postgraduate / PhD":    score -= 5
 
 with sim_col2:
-    if score > 60:
+    if score > 65:
         st.markdown("""
 <div class="section-card" style="border-left:4px solid #d4537e">
     <div class="section-label">Detective's Verdict</div>
     <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#993556;margin-bottom:0.5rem">🕵️ High Catfish & Bot Danger Zone!</div>
-    <div class="overview-body">Spending hours rapidly swiping yes on everyone flags machine-like behaviour. Our data shows this hyperactive pattern is highly vulnerable to fake profiles and scam bots.</div>
+    <div class="overview-body">Spending hours rapidly swiping yes on everyone with a blank bio flags machine-like behaviour. Our data shows this hyperactive pattern is highly vulnerable to fake profiles and scam bots.</div>
 </div>
 """, unsafe_allow_html=True)
     elif score < 38:
@@ -116,7 +164,7 @@ with sim_col2:
 <div class="section-card" style="border-left:4px solid #639922">
     <div class="section-label">Detective's Verdict</div>
     <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#3b6d11;margin-bottom:0.5rem">💘 Green Flags! Safe Track to a Mutual Match</div>
-    <div class="overview-body">Low screen time mixed with selective swiping shows true intent. The data confirms this thoughtful approach yields the highest success rate for meaningful connections.</div>
+    <div class="overview-body">Low screen time, selective swiping, a detailed bio and great photos show true intent. The data confirms this thoughtful approach yields the highest success rate for meaningful connections.</div>
 </div>
 """, unsafe_allow_html=True)
     else:
@@ -125,6 +173,23 @@ with sim_col2:
     <div class="section-label">Detective's Verdict</div>
     <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#854f0b;margin-bottom:0.5rem">👻 The Fading Loop — High Risk of Being Ghosted</div>
     <div class="overview-body">A casual, typical user pattern. You're active enough to spark a conversation, but the habits lack the momentum needed — most connections fizzle into silence.</div>
+</div>
+""", unsafe_allow_html=True)
+
+    # ── Score breakdown ───────────────────────────────────────────────────────
+    score_clamped = max(0, min(100, score))
+    st.markdown(f"""
+<div class="section-card" style="margin-top:1rem">
+    <div class="section-label">Your Situationship Risk Score</div>
+    <div style="font-size:36px;font-weight:700;color:#d4537e;margin-bottom:0.5rem">{score_clamped} / 100</div>
+    <div style="background:#f7f5f2;border-radius:8px;height:12px;overflow:hidden;margin-bottom:0.5rem">
+        <div style="width:{score_clamped}%;height:100%;background:linear-gradient(90deg,#639922,#ef9f27,#d4537e);border-radius:8px"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#888780">
+        <span>0 — Safe Match</span>
+        <span>50 — Ambiguous</span>
+        <span>100 — Danger Zone</span>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
