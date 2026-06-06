@@ -190,7 +190,7 @@ try:
     🟧 <strong>Catfished (amber)</strong> dominates on <strong>Situationship Index</strong>, <strong>Swipe Right Rate</strong>, and <strong>Education Level</strong> — fake profiles and bots swipe right on everyone without discrimination, inflating their swipe ratio. Higher education users may also be more trusting or spend more time crafting elaborate fake identities.<br><br>
     🟥 <strong>Ghosted (pink)</strong> spikes toward <strong>Bio Characters Length</strong> and <strong>Profile Pictures Uploaded</strong> — these users invest effort into their profile presentation but score low on active daily engagement. They attract initial interest but disappear before anything real develops.<br><br>
     🟩 <strong>Mutual Match (green)</strong> spikes toward <strong>Daily App Usage</strong>, <strong>Messages Sent Daily</strong>, and <strong>Profile Pictures</strong> — real connections come from users who are genuinely present, emotionally engaged in conversations, and visually authentic on their profiles.<br><br>
-    📍 <strong>Location Type</strong> is flat across all three classes — where you live has no meaningful influence on your dating outcome.
+    📍 <strong>Location Type</strong> shows a slight spike for <strong>Ghosted (pink)</strong> — users in certain areas may experience slightly higher ghosting rates, though the effect is minimal and considered the least influential feature overall.
 </div>
 """, unsafe_allow_html=True)
 
