@@ -150,46 +150,88 @@ with sim_col1:
     if edu_habit == "High School / Diploma":   score += 5
     elif edu_habit == "Postgraduate / PhD":    score -= 5
 
+score_clamped = max(0, min(100, score))
+
 with sim_col2:
-    if score > 65:
+    if score_clamped >= 75:
         st.markdown("""
 <div class="section-card" style="border-left:4px solid #d4537e">
     <div class="section-label">Detective's Verdict</div>
     <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#993556;margin-bottom:0.5rem">🕵️ High Catfish & Bot Danger Zone!</div>
-    <div class="overview-body">Spending hours rapidly swiping yes on everyone with a blank bio flags machine-like behaviour. Our data shows this hyperactive pattern is highly vulnerable to fake profiles and scam bots.</div>
+    <div class="overview-body">Maximal app time with a blank bio and reckless swiping flags machine-like behaviour. Our data shows this pattern is highly vulnerable to fake profiles and scam bots.</div>
 </div>
 """, unsafe_allow_html=True)
-    elif score < 38:
+    elif score_clamped >= 60:
+        st.markdown("""
+<div class="section-card" style="border-left:4px solid #ef9f27">
+    <div class="section-label">Detective's Verdict</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#854f0b;margin-bottom:0.5rem">👻 Avoidant Pattern — High Risk of Being Ghosted</div>
+    <div class="overview-body">Heavy app investment with low returns. You're active but conversations aren't converting — most connections fizzle into silence before anything real develops.</div>
+</div>
+""", unsafe_allow_html=True)
+    elif score_clamped >= 45:
+        st.markdown("""
+<div class="section-card" style="border-left:4px solid #ef9f27">
+    <div class="section-label">Detective's Verdict</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#854f0b;margin-bottom:0.5rem">😐 Casual Zone — Could Go Either Way</div>
+    <div class="overview-body">Moderate activity across all dimensions. You're keeping options open but not fully committed — connections may start but struggle to deepen into something meaningful.</div>
+</div>
+""", unsafe_allow_html=True)
+    elif score_clamped >= 30:
         st.markdown("""
 <div class="section-card" style="border-left:4px solid #639922">
     <div class="section-label">Detective's Verdict</div>
-    <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#3b6d11;margin-bottom:0.5rem">💘 Green Flags! Safe Track to a Mutual Match</div>
-    <div class="overview-body">Low screen time, selective swiping, a detailed bio and great photos show true intent. The data confirms this thoughtful approach yields the highest success rate for meaningful connections.</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#3b6d11;margin-bottom:0.5rem">💘 Intentional — Good Chance of a Mutual Match</div>
+    <div class="overview-body">Selective engagement with reasonable match conversion. You're playing it smart and the data backs you up — genuine connections are within reach.</div>
 </div>
 """, unsafe_allow_html=True)
     else:
         st.markdown("""
-<div class="section-card" style="border-left:4px solid #ef9f27">
+<div class="section-card" style="border-left:4px solid #3b6d11">
     <div class="section-label">Detective's Verdict</div>
-    <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#854f0b;margin-bottom:0.5rem">👻 The Fading Loop — High Risk of Being Ghosted</div>
-    <div class="overview-body">A casual, typical user pattern. You're active enough to spark a conversation, but the habits lack the momentum needed — most connections fizzle into silence.</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#3b6d11;margin-bottom:0.5rem">💘 Committed — Safe Track to a Mutual Match</div>
+    <div class="overview-body">Low screen time, selective swiping, a detailed bio and great photos show true intent. The data confirms this thoughtful approach yields the highest success rate for meaningful connections.</div>
 </div>
 """, unsafe_allow_html=True)
+        
+   # ── Score breakdown ───────────────────────────────────────────────────────
+    if score_clamped <= 29:
+        si_label = "Committed"
+        si_color = "#3b6d11"
+        si_desc  = "You know what you want. Low usage, selective swiping — you're here for real connections."
+    elif score_clamped <= 44:
+        si_label = "Intentional"
+        si_color = "#639922"
+        si_desc  = "Selective engagement with reasonable match conversion. You're playing it smart."
+    elif score_clamped <= 59:
+        si_label = "Casual"
+        si_color = "#ef9f27"
+        si_desc  = "Moderate activity across all dimensions — keeping options open but not fully committed."
+    elif score_clamped <= 74:
+        si_label = "Avoidant"
+        si_color = "#ba7517"
+        si_desc  = "Heavy app investment with low returns — classic situationship warning signals."
+    else:
+        si_label = "Situationship"
+        si_color = "#d4537e"
+        si_desc  = "Maximal app time, low efficiency — deeply in situationship territory."
 
-    # ── Score breakdown ───────────────────────────────────────────────────────
-    score_clamped = max(0, min(100, score))
     st.markdown(f"""
 <div class="section-card" style="margin-top:1rem">
-    <div class="section-label">Your Situationship Risk Score</div>
-    <div style="font-size:36px;font-weight:700;color:#d4537e;margin-bottom:0.5rem">{score_clamped} / 100</div>
+    <div class="section-label">Your Situationship Index</div>
+    <div style="font-size:36px;font-weight:700;color:{si_color};margin-bottom:0.25rem">{score_clamped} / 100</div>
+    <div style="font-size:18px;font-weight:700;color:{si_color};margin-bottom:0.75rem">{si_label}</div>
     <div style="background:#f7f5f2;border-radius:8px;height:12px;overflow:hidden;margin-bottom:0.5rem">
         <div style="width:{score_clamped}%;height:100%;background:linear-gradient(90deg,#639922,#ef9f27,#d4537e);border-radius:8px"></div>
     </div>
-    <div style="display:flex;justify-content:space-between;font-size:12px;color:#888780">
-        <span>0 — Safe Match</span>
-        <span>50 — Ambiguous</span>
-        <span>100 — Danger Zone</span>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:#888780;margin-bottom:0.75rem">
+        <span>0 Committed</span>
+        <span>30 Intentional</span>
+        <span>45 Casual</span>
+        <span>60 Avoidant</span>
+        <span>75 Situationship</span>
     </div>
+    <div class="overview-body" style="font-size:15px;font-style:italic">{si_desc}</div>
 </div>
 """, unsafe_allow_html=True)
 
