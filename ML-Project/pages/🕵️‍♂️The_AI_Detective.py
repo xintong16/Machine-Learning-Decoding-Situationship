@@ -22,28 +22,28 @@ st.markdown("""
 
 importance_data = {
     "Your Dating Habits": [
-        "📍 Living in a Rural vs Urban Area",
-        "🎓 Your Education Background",
-        "📸 Uploading Lots of Profile Pictures",
-        "👉 Swiping 'Yes' on Everyone",
-        "😂 Overusing Emojis in Messages",
-        "💬 Sending Endless Texts Daily",
         "📱 Scrolling the App for Hours",
-        "✍️ Writing a Long Detailed Bio",
-        "💘 Your Overall Situationship Vibe"
+        "👉 Swiping 'Yes' on Everyone",
+        "💬 Sending Endless Texts Daily",
+        "😂 Overusing Emojis in Messages",
+        "📍 Living in a Rural Area",
+        "🎓 Having Lower Education Level",
+        "✍️ Leaving Your Bio Blank or Short",
+        "💘 High Situationship Index Score",
+        "📸 Uploading Lots of Profile Pictures"
     ],
     "The AI's Take": [
+        "🚨 Red Flag Warning",
+        "⚠️ Major Warning Sign",
+        "⏳ Minor Warning Sign",
         "ℹ️ Doesn't Matter Much",
         "ℹ️ Doesn't Matter Much",
-        "⏳ Minor Warning Sign",
-        "⏳ Minor Warning Sign",
-        "⚠️ Major Warning Sign",
-        "⚠️ Major Warning Sign",
-        "⚠️ Major Warning Sign",
+        "ℹ️ Doesn't Matter Much",
         "🛡️ Good Profile Shield",
-        "🚨 Red Flag Warning"
+        "🛡️ Good Profile Shield",
+        "✨ Ultimate Green Flag"
     ],
-    "Impact Score": [0.017, 0.050, 0.071, 0.132, 0.134, 0.138, 0.147, 0.153, 0.158]
+    "Impact Score": [85, 65, 35, 8, 5, 3, -15, -20, -45]
 }
 
 df_importance = pd.DataFrame(importance_data)
