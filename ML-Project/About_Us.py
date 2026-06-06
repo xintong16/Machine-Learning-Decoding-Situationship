@@ -18,7 +18,7 @@ st.markdown("""
     <div class="hero-badges">
         <span class="hero-badge">14,974 records</span>
         <span class="hero-badge">3-class classification</span>
-        <span class="hero-badge">6 ML models</span>
+        <span class="hero-badge">5+1 ML models</span>
         <span class="hero-badge">Situationship Index</span>
     </div>
 </div>
