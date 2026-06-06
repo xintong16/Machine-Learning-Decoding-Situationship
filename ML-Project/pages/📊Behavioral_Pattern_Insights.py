@@ -186,11 +186,11 @@ try:
 
         st.markdown("""
 <div class="info-box" style="margin-bottom:2.5rem">
-    💡 <strong>What this radar means:</strong> The further a colour spikes outward, the higher that group scores for that habit.<br><br>
-    🟩 <strong>Mutual Match (green)</strong> spikes toward Daily App Usage, Messages Sent, and Profile Pictures — active, talkative, and visually complete profiles win.<br><br>
-    🟧 <strong>Catfished (amber)</strong> spikes aggressively toward Situationship Index, Swipe Right Rate, and Education Level — classic bot and scam profile signatures.<br><br>
-    🟥 <strong>Ghosted (pink)</strong> spikes toward Bio Characters Length and Profile Pictures but scores low on daily app presence — effort without momentum.<br><br>
-    📍 <strong>Location Type and Education Level</strong> show minimal spread across all three classes, confirming their low predictive power as found in the feature importance analysis.
+    💡 <strong>What this radar means:</strong> The further a colour spikes outward, the higher that group scores for that habit. Each outcome class has a unique behavioral fingerprint the ML model learned to separate.<br><br>
+    🟧 <strong>Catfished (amber)</strong> dominates on <strong>Situationship Index</strong>, <strong>Swipe Right Rate</strong>, and <strong>Education Level</strong> — fake profiles and bots swipe right on everyone without discrimination, inflating their swipe ratio. Higher education users may also be more trusting or spend more time crafting elaborate fake identities.<br><br>
+    🟥 <strong>Ghosted (pink)</strong> spikes toward <strong>Bio Characters Length</strong> and <strong>Profile Pictures Uploaded</strong> — these users invest effort into their profile presentation but score low on active daily engagement. They attract initial interest but disappear before anything real develops.<br><br>
+    🟩 <strong>Mutual Match (green)</strong> spikes toward <strong>Daily App Usage</strong>, <strong>Messages Sent Daily</strong>, and <strong>Profile Pictures</strong> — real connections come from users who are genuinely present, emotionally engaged in conversations, and visually authentic on their profiles.<br><br>
+    📍 <strong>Location Type</strong> is flat across all three classes — where you live has no meaningful influence on your dating outcome.
 </div>
 """, unsafe_allow_html=True)
 
