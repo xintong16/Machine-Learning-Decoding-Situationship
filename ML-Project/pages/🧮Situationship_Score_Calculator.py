@@ -42,6 +42,14 @@ app_usage_time = app_usage_hours * 60.0
 match_rate     = np.clip(matches_rec / (likes_received + 1), 0.0, 1.0)
 efficiency     = np.clip(matches_rec / (app_usage_time + 0.1), 0.0, 1.0)
 
+st.markdown("""
+<div class="info-box" style="margin-bottom:1.25rem">
+    💡 <strong>9 behavioral features used:</strong> App Usage · Swipe Ratio · Messages Sent · 
+    Emoji Usage · Bio Length · Profile Pictures · Location · Education Level · 
+    Situationship Index (auto-calculated from your inputs above)
+</div>
+""", unsafe_allow_html=True)
+
 if st.button("🔮 Calculate Scores & Predict Destiny", use_container_width=True):
 
     norm_app_time = min(app_usage_time / 300.0, 1.0)
