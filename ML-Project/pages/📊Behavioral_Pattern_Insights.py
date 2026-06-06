@@ -186,10 +186,11 @@ try:
 
         st.markdown("""
 <div class="info-box" style="margin-bottom:2.5rem">
-    💡 <strong>What this radar means:</strong> The further a colour spikes outward, the higher that group scores for that habit.
-    <strong>Mutual Match (green)</strong> spikes toward app usage, messages, and profile pics.
-    <strong>Catfished (amber)</strong> spikes toward Situationship Index and emoji usage.
-    <strong>Ghosted (pink)</strong> spikes toward bio length but scores low on daily presence.
+    💡 <strong>What this radar means:</strong> The further a colour spikes outward, the higher that group scores for that habit.<br><br>
+    🟩 <strong>Mutual Match (green)</strong> spikes toward Daily App Usage, Messages Sent, and Profile Pictures — active, talkative, and visually complete profiles win.<br><br>
+    🟧 <strong>Catfished (amber)</strong> spikes aggressively toward Situationship Index, Swipe Right Rate, and Education Level — classic bot and scam profile signatures.<br><br>
+    🟥 <strong>Ghosted (pink)</strong> spikes toward Bio Characters Length and Profile Pictures but scores low on daily app presence — effort without momentum.<br><br>
+    📍 <strong>Location Type and Education Level</strong> show minimal spread across all three classes, confirming their low predictive power as found in the feature importance analysis.
 </div>
 """, unsafe_allow_html=True)
 
