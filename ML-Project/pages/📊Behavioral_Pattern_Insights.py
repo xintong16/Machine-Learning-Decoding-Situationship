@@ -35,13 +35,15 @@ try:
         df['Dating Outcome'] = "Unknown Status"
 
     friendly_names = {
-        'AppUsage': 'Daily App Usage Score',
-        'swipe_right_ratio': 'Swipe Right Rate (%)',
+        'AppUsage':           'Daily App Usage Score',
+        'SwipeRatio':         'Swipe Right Rate (%)',
         'message_sent_count': 'Messages Sent Daily',
         'profile_pics_count': 'Profile Pictures Uploaded',
-        'bio_length': 'Bio Characters Length',
-        'emoji_usage_rate': 'Emoji Usage Rate',
-        'Situationship_Index': 'Situationship Index'
+        'bio_length':         'Bio Characters Length',
+        'emoji_usage_rate':   'Emoji Usage Rate',
+        'location_type':      'Location Type',
+        'education_level':    'Education Level',
+        'Situationship_Index':'Situationship Index'
     }
 
     available_cols = [c for c in friendly_names.keys() if c in df.columns]
