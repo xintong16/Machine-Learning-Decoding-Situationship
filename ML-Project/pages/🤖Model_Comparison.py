@@ -9,7 +9,7 @@ page_header(
     eyebrow="Model Comparison",
     title="Model Benchmark & Analytics",
     subtitle="We built, trained, and cross-validated 5 distinct ML classifiers. Here is how they stack up against random chance.",
-    badges=["6 models", "3-class target", "33.33% baseline"]
+    badges=["5+1 models", "3-class target", "33.33% baseline"]
 )
 
 @st.cache_data
@@ -56,7 +56,7 @@ st.markdown(f"""
 # ── Leaderboard table ─────────────────────────────────────────────────────────
 st.markdown("""
 <div class="section-card">
-    <div class="section-label">6-Model Performance Leaderboard</div>
+    <div class="section-label"> All Model Performance Leaderboard</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -68,7 +68,7 @@ st.dataframe(
 # ── Bar chart ─────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="section-card" style="margin-top:1.25rem">
-    <div class="section-label">Visualising 6-Model Performance</div>
+    <div class="section-label">Visualising All Model Performance</div>
     <div class="overview-body">All models beat the 33.33% random baseline. The differences are intentionally tight — human romance is genuinely hard to predict.</div>
 </div>
 """, unsafe_allow_html=True)
@@ -77,7 +77,7 @@ fig_compare = px.bar(
     df_metrics,
     x="Model", y="Testing Accuracy (%)",
     color="Model", text_auto='.2f',
-    title="Testing Accuracy Across All 6 Trained Models",
+    title="Testing Accuracy Across All Trained Models",
     color_discrete_sequence=['#d4537e','#ed93b1','#ed93b1','#ed93b1','#ed93b1','#ed93b1']
 )
 
